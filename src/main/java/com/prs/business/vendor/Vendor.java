@@ -18,9 +18,10 @@ public class Vendor {
 	private String zip;
 	private String phoneNumber;
 	private String email;
-	
+	private boolean isPreApproved;
+
 	public Vendor(int id, String code, String name, String address, String city, String state, String zip,
-			String phoneNumber, String email) {
+			String phoneNumber, String email, boolean isPreApproved) {
 		super();
 		this.id = id;
 		this.code = code;
@@ -31,6 +32,11 @@ public class Vendor {
 		this.zip = zip;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
+		this.isPreApproved = isPreApproved;
+	}
+	
+	public Vendor() {
+		super();
 	}
 
 	public int getId() {
@@ -105,11 +111,13 @@ public class Vendor {
 		this.email = email;
 	}
 
-	@Override
-	public String toString() {
-		return "Vendor [id=" + id + ", code=" + code + ", name=" + name + ", address=" + address + ", city=" + city
-				+ ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber + ", email=" + email + "]";
+	public boolean isPreApproved() {
+		return isPreApproved;
 	}
-	
-}
-	
+
+	public void setPreApproved(boolean isPreApproved) {
+		this.isPreApproved = isPreApproved;
+	}
+
+
+}	

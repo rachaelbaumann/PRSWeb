@@ -1,5 +1,6 @@
 package com.prs.web;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.prs.business.purchaserequest.PurchaseRequest;
 import com.prs.business.purchaserequest.PurchaseRequestRepository;
+import com.prs.util.JsonResponse;
 import com.prs.util.PRSMaintenanceReturn;
 
 @CrossOrigin	// Prevents errors such as 'Response for preflight has invalid HTTP status code 403.'
@@ -79,8 +81,19 @@ public class PurchaseRequestController extends BaseController {
 		}
 		catch (Exception e) {
 			return PRSMaintenanceReturn.getMaintReturnError(pr, e.toString());
+		}	
+	}
+	
+	
+	@PostMapping(path = "/Submit")
+	public @ResponseBody PRSMaintenanceReturn submitForReview (@RequestBody PurchaseRequest pr) {
+		if (pr.getTotal() <= 50) {
+			pr.setStatus(pr.STATUS_APPROVED);
+		} else {
+			pr.setStatus(pr.STATUS_REVIEW);
 		}
-		
+		pr.setSubmittedDate(LocalDateTime.now());
+		return updatePurchaseRequest(pr);
 	}
 }
 

@@ -37,7 +37,7 @@ public class PRSMaintenanceReturn {
 		PRSMaintenanceReturn r = new PRSMaintenanceReturn();
 		if (obj!=null) {
 			r.setResult(SUCCESS);
-			r.setMessage(obj.getClass().getSimpleName()+" maintenance success");
+			r.setMessage(obj.getClass().getSimpleName() + " maintenance success");
 		} else {
 			r.setResult(FAILURE);
 			// Can't use obj.getClass() because obj is null

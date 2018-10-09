@@ -6,83 +6,164 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.prs.business.purchaserequest.PurchaseRequestLineItem;
 import com.prs.business.purchaserequest.PurchaseRequestLineItemRepository;
-import com.prs.util.PRSMaintenanceReturn;
+import com.prs.util.JsonResponse;
 
-@CrossOrigin	// Prevents errors such as 'Response for preflight has invalid HTTP status code 403.'
-@Controller		
-@RequestMapping(path="/PurchaseRequestLineItems")
-public class PurchaseRequestLineItemController extends BaseController {
+@Controller
+@RequestMapping("/PurchaseRequestLineItems")
+public class PurchaseRequestLineItemController {
+
 	@Autowired
 	private PurchaseRequestLineItemRepository prliRepository;
 
-	@GetMapping(path="/List")
-	public @ResponseBody Iterable<PurchaseRequestLineItem> getAllPurchaseRequestLineItems() {
-		return prliRepository.findAll();
-	}
-	
-	@GetMapping(path="/Get")
-	public @ResponseBody List<PurchaseRequestLineItem> getPurchaseRequestLineItem(@RequestParam int id) {
-		Optional<PurchaseRequestLineItem> prli = prliRepository.findById(id);
-		return getReturnArray(prli);
+	@GetMapping("/List")
+	public @ResponseBody JsonResponse getAllPurchaseRequestLineItems() {
+		try {
+			return JsonResponse.getInstance(prliRepository.findAll());
+		} catch (Exception e) {
+			return JsonResponse.getErrorInstance("Purchase request line item list failure:" + e.getMessage(), e);
+		}
 	}
 
-	@PostMapping(path="/Add") 
-	public @ResponseBody PRSMaintenanceReturn addNewPurchaseRequestLineItem (@RequestBody PurchaseRequestLineItem prli) {
+	@GetMapping("/Get/{id}")
+	public @ResponseBody JsonResponse getPurchaseRequestLineItem(@PathVariable int id) {
 		try {
-			prliRepository.save(prli);
-			return PRSMaintenanceReturn.getMaintReturn(prli);
+			Optional<PurchaseRequestLineItem> prli = prliRepository.findById(id);
+			if (prli.isPresent())
+				return JsonResponse.getInstance(prli.get());
+			else
+				return JsonResponse.getErrorInstance("Purchase request line item not found for id: " + id, null);
+		} catch (Exception e) {
+			return JsonResponse.getErrorInstance("Error getting purchase request line item:  " + e.getMessage(), null);
 		}
-		catch (DataIntegrityViolationException dive) {
-			return PRSMaintenanceReturn.getMaintReturnError(prli, dive.getRootCause().toString());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return PRSMaintenanceReturn.getMaintReturnError(prli, e.getMessage());
-		}
-	}
-	
-	@GetMapping(path="/Remove") // Map ONLY GET Requests
-	public @ResponseBody PRSMaintenanceReturn deletePurchaseRequestLineItem (@RequestParam int id) {
-		
-		Optional<PurchaseRequestLineItem> prli = prliRepository.findById(id);
-		try {
-			prliRepository.delete(prli.get());
-			return PRSMaintenanceReturn.getMaintReturn(prli.get());
-		}
-		catch (DataIntegrityViolationException dive) {
-			return PRSMaintenanceReturn.getMaintReturnError(prli, dive.getRootCause().toString());
-		}
-		catch (Exception e) {
-			return PRSMaintenanceReturn.getMaintReturnError(prli, e.toString());
-		}
-		
 	}
 
-	@PostMapping(path="/Change") 
-	public @ResponseBody PRSMaintenanceReturn updatePurchaseRequestLineItem (@RequestBody PurchaseRequestLineItem prli) {
+	@PostMapping("/Add")
+	public @ResponseBody JsonResponse addPurchaseRequestLineItem(@RequestBody PurchaseRequestLineItem prli) {
+		return savePurchaseRequestLineItem(prli);
+	}
+
+	@PostMapping("/Change")
+	public @ResponseBody JsonResponse updatePurchaseRequestLineItem(@RequestBody PurchaseRequestLineItem prli) {
+		return savePurchaseRequestLineItem(prli);
+	}
+
+	private @ResponseBody JsonResponse savePurchaseRequestLineItem(@RequestBody PurchaseRequestLineItem prli) {
 		try {
 			prliRepository.save(prli);
-			return PRSMaintenanceReturn.getMaintReturn(prli);
+			return JsonResponse.getInstance(prli);
+		} catch (DataIntegrityViolationException ex) {
+			return JsonResponse.getErrorInstance(ex.getRootCause().toString(), ex);
+		} catch (Exception ex) {
+			return JsonResponse.getErrorInstance(ex.getMessage(), ex);
 		}
-		catch (DataIntegrityViolationException dive) {
-			return PRSMaintenanceReturn.getMaintReturnError(prli, dive.getRootCause().toString());
+	}
+
+	@PostMapping("/Remove")
+	public @ResponseBody JsonResponse removePurchaseRequestLineItem(@RequestBody PurchaseRequestLineItem prli) {
+		try {
+			prliRepository.delete(prli);
+			return JsonResponse.getInstance(prli);
+		} catch (Exception ex) {
+			return JsonResponse.getErrorInstance(ex.getMessage(), ex);
 		}
-		catch (Exception e) {
-			return PRSMaintenanceReturn.getMaintReturnError(prli, e.toString());
-		}
-		
 	}
 }
+
+
+//package com.prs.web;
+//
+//import java.util.List;
+//import java.util.Optional;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.dao.DataIntegrityViolationException;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.CrossOrigin;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.ResponseBody;
+//
+//import com.prs.business.purchaserequest.PurchaseRequestLineItem;
+//import com.prs.business.purchaserequest.PurchaseRequestLineItemRepository;
+//import com.prs.util.PRSMaintenanceReturn;
+//
+//@CrossOrigin	// Prevents errors such as 'Response for preflight has invalid HTTP status code 403.'
+//@Controller		
+//@RequestMapping(path="/PurchaseRequestLineItems")
+//public class PurchaseRequestLineItemController extends BaseController {
+//	@Autowired
+//	private PurchaseRequestLineItemRepository prliRepository;
+//
+//	@GetMapping(path="/List")
+//	public @ResponseBody Iterable<PurchaseRequestLineItem> getAllPurchaseRequestLineItems() {
+//		return prliRepository.findAll();
+//	}
+//	
+//	@GetMapping(path="/Get")
+//	public @ResponseBody List<PurchaseRequestLineItem> getPurchaseRequestLineItem(@RequestParam int id) {
+//		Optional<PurchaseRequestLineItem> prli = prliRepository.findById(id);
+//		return getReturnArray(prli);
+//	}
+//
+//	@PostMapping(path="/Add") 
+//	public @ResponseBody PRSMaintenanceReturn addNewPurchaseRequestLineItem (@RequestBody PurchaseRequestLineItem prli) {
+//		try {
+//			prliRepository.save(prli);
+//			return PRSMaintenanceReturn.getMaintReturn(prli);
+//		}
+//		catch (DataIntegrityViolationException dive) {
+//			return PRSMaintenanceReturn.getMaintReturnError(prli, dive.getRootCause().toString());
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//			return PRSMaintenanceReturn.getMaintReturnError(prli, e.getMessage());
+//		}
+//	}
+//	
+//	@GetMapping(path="/Remove") // Map ONLY GET Requests
+//	public @ResponseBody PRSMaintenanceReturn deletePurchaseRequestLineItem (@RequestParam int id) {
+//		
+//		Optional<PurchaseRequestLineItem> prli = prliRepository.findById(id);
+//		try {
+//			prliRepository.delete(prli.get());
+//			return PRSMaintenanceReturn.getMaintReturn(prli.get());
+//		}
+//		catch (DataIntegrityViolationException dive) {
+//			return PRSMaintenanceReturn.getMaintReturnError(prli, dive.getRootCause().toString());
+//		}
+//		catch (Exception e) {
+//			return PRSMaintenanceReturn.getMaintReturnError(prli, e.toString());
+//		}
+//		
+//	}
+//
+//	@PostMapping(path="/Change") 
+//	public @ResponseBody PRSMaintenanceReturn updatePurchaseRequestLineItem (@RequestBody PurchaseRequestLineItem prli) {
+//		try {
+//			prliRepository.save(prli);
+//			return PRSMaintenanceReturn.getMaintReturn(prli);
+//		}
+//		catch (DataIntegrityViolationException dive) {
+//			return PRSMaintenanceReturn.getMaintReturnError(prli, dive.getRootCause().toString());
+//		}
+//		catch (Exception e) {
+//			return PRSMaintenanceReturn.getMaintReturnError(prli, e.toString());
+//		}
+//		
+//	}
+//}
 
 
 

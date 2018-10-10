@@ -1,5 +1,7 @@
 package com.prs.web;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.prs.business.purchaserequest.PurchaseRequest;
 import com.prs.business.purchaserequest.PurchaseRequestRepository;
 import com.prs.util.JsonResponse;
+import com.prs.util.PRSMaintenanceReturn;
 
 @Controller
 @RequestMapping("/PurchaseRequests")
@@ -48,6 +52,8 @@ public class PurchaseRequestController {
 
 	@PostMapping("/Add")
 	public @ResponseBody JsonResponse addPurchaseRequest(@RequestBody PurchaseRequest pr) {
+		pr.setSubmittedDate(LocalDateTime.now());
+		pr.setStatus(PurchaseRequest.STATUS_NEW);
 		return savePurchaseRequest(pr);
 	}
 
@@ -75,6 +81,35 @@ public class PurchaseRequestController {
 		} catch (Exception ex) {
 			return JsonResponse.getErrorInstance(ex.getMessage(), ex);
 		}
+	}
+	
+	@PostMapping("/Submit")
+	public @ResponseBody JsonResponse submitForReview (@RequestBody PurchaseRequest pr) {
+		if (pr.getTotal() <= 50) {
+			pr.setStatus(PurchaseRequest.STATUS_APPROVED);
+		} else {
+			pr.setStatus(PurchaseRequest.STATUS_REVIEW);
+		}
+		pr.setSubmittedDate(LocalDateTime.now());
+		return savePurchaseRequest(pr);
+	}
+	
+	@PostMapping("/Approve")
+	public @ResponseBody JsonResponse approveRequest (@RequestBody PurchaseRequest pr) {
+		pr.setStatus(PurchaseRequest.STATUS_APPROVED);
+		return savePurchaseRequest(pr);
+	}
+	
+	@PostMapping("/Reject") 
+	public @ResponseBody JsonResponse rejectRequest (@RequestBody PurchaseRequest pr) {
+		pr.setStatus(PurchaseRequest.STATUS_REJECTED);
+		return savePurchaseRequest(pr);
+	}
+	
+	@GetMapping("/Review")
+	public @ResponseBody Iterable<PurchaseRequest> getAllPurchaseRequestsForReview(@RequestParam int id) {
+		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIdNotAndStatus(id, "review");
+		return reviewPurchaseRequests;
 	}
 }
 

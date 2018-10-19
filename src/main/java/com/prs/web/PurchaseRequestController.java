@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import com.prs.business.purchaserequest.PurchaseRequestRepository;
 import com.prs.util.JsonResponse;
 import com.prs.util.PRSMaintenanceReturn;
 
+@CrossOrigin
 @Controller
 @RequestMapping("/PurchaseRequests")
 public class PurchaseRequestController {
@@ -106,11 +108,17 @@ public class PurchaseRequestController {
 		return savePurchaseRequest(pr);
 	}
 	
-	@GetMapping("/Review")
+	@GetMapping("/ListReview")
 	public @ResponseBody Iterable<PurchaseRequest> getAllPurchaseRequestsForReview(@RequestParam int id) {
-		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIdNotAndStatus(id, "review");
+		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIdNotAndStatus(id, "Review");
 		return reviewPurchaseRequests;
 	}
+	
+//	@GetMapping("/Review")
+//	public @ResponseBody Iterable<PurchaseRequest> getAllPurchaseRequestsForReview(@RequestParam int id) {
+//		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIdNotAndStatus(id, "review");
+//		return reviewPurchaseRequests;
+//	}
 }
 
 

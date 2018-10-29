@@ -1,5 +1,6 @@
 package com.prs.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.prs.business.product.Product;
+import com.prs.business.purchaserequest.PurchaseRequest;
 import com.prs.business.purchaserequest.PurchaseRequestLineItem;
 import com.prs.business.purchaserequest.PurchaseRequestLineItemRepository;
+import com.prs.business.purchaserequest.PurchaseRequestRepository;
 import com.prs.util.JsonResponse;
 
 @CrossOrigin
@@ -25,6 +29,10 @@ public class PurchaseRequestLineItemController {
 
 	@Autowired
 	private PurchaseRequestLineItemRepository prliRepository;
+	
+	@Autowired
+	private PurchaseRequestRepository prRepository;
+	
 
 	@GetMapping("/List")
 	public @ResponseBody JsonResponse getAllPurchaseRequestLineItems() {
@@ -50,7 +58,10 @@ public class PurchaseRequestLineItemController {
 
 	@PostMapping("/Add")
 	public @ResponseBody JsonResponse addPurchaseRequestLineItem(@RequestBody PurchaseRequestLineItem prli) {
-		return savePurchaseRequestLineItem(prli);
+		JsonResponse retn = savePurchaseRequestLineItem(prli);
+		
+		return retn;
+//		return savePurchaseRequestLineItem(prli);
 	}
 
 	@PostMapping("/Change")
@@ -78,8 +89,56 @@ public class PurchaseRequestLineItemController {
 			return JsonResponse.getErrorInstance(ex.getMessage(), ex);
 		}
 	}
+	
+
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//public void updatePRTotal(PurchaseRequestLineItem prli) {
+////	Optional<PurchaseRequest> prOptional = prRepository.findById(prli.getPurchaseRequest().getId());
+////	PurchaseRequest pr = prOptional.get();
+//	
+//	PurchaseRequest pr = prRepository.findById(prli.getPurchaseRequest().getId()).get();
+//	
+//	List<PurchaseRequestLineItem> lineItems = new ArrayList<>();
+//	lineItems = prliRepository.findAllByPurchaseRequestID(pr.getId());
+//	double total = 0.00;
+//	for (PurchaseRequestLineItem lineItem : lineItems) {
+//		Product product = lineItem.getProduct();
+//		double newTotal = lineItem.getQuantity() * product.getPrice();
+//		total += newTotal;
+//	}
+//}
 
 //package com.prs.web;
 //

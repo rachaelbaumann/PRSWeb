@@ -110,15 +110,10 @@ public class PurchaseRequestController {
 	
 	@GetMapping("/ListReview")
 	public @ResponseBody Iterable<PurchaseRequest> getAllPurchaseRequestsForReview(@RequestParam int id) {
-		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIdNotAndStatus(id, "Review");
+		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIDNotAndStatus(id, "Review");
 		return reviewPurchaseRequests;
 	}
 	
-//	@GetMapping("/Review")
-//	public @ResponseBody Iterable<PurchaseRequest> getAllPurchaseRequestsForReview(@RequestParam int id) {
-//		Iterable<PurchaseRequest> reviewPurchaseRequests = prRepository.findAllByUserIdNotAndStatus(id, "review");
-//		return reviewPurchaseRequests;
-//	}
 }
 
 

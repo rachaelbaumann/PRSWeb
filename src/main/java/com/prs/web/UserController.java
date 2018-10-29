@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.prs.business.product.Product;
 import com.prs.business.user.User;
 import com.prs.business.user.UserRepository;
 import com.prs.util.JsonResponse;
@@ -53,12 +54,30 @@ public class UserController {
 		try {
 			User u = userRepository.findByUserNameAndPassword(user.getUserName(), user.getPassword());
 			return JsonResponse.getInstance(u);
-
-		} catch (Exception e) {
+		}
+		catch(Exception e) {
 			return JsonResponse.getErrorInstance("Error authenticating user:  " + e.getMessage(), null);
 		}
-
 	}
+//	@PostMapping("/Login")
+//	public @ResponseBody JsonResponse authenticate(@RequestBody User user) {
+//		try {
+//			//OG
+//			User u = userRepository.findByUserNameAndPassword(user.getUserName(), user.getPassword());
+//			return JsonResponse.getInstance(u);
+//			
+////			Optional<User> user = userRepository.findById(id);
+////			return JsonResponse.getInstance(u);
+////			if (user.isPresent())
+////				return JsonResponse.getInstance(user.get());
+////			else 
+////				return JsonResponse.getErrorInstance("User not found for id: " + id, null);
+//			
+////		} catch (Exception e) {
+////			return JsonResponse.getErrorInstance("Error authenticating user:  " + e.getMessage(), null);
+////		}
+//
+//	}
 
 	@PostMapping("/Add")
 	public @ResponseBody JsonResponse addUser(@RequestBody User user) {

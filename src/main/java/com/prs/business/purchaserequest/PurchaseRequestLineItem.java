@@ -15,8 +15,8 @@ public class PurchaseRequestLineItem {
 	@GeneratedValue (strategy = GenerationType.IDENTITY) //IDENTITY is a constant inside GenerationType
 	private int id;
 	@ManyToOne
-	@JoinColumn(name = "purchaserequestID")
-	private PurchaseRequest purchaserequest;
+	@JoinColumn(name = "purchaseRequestID")
+	private PurchaseRequest purchaseRequest;
 	@ManyToOne
 	@JoinColumn(name = "productID")
 	private Product product;
@@ -25,14 +25,14 @@ public class PurchaseRequestLineItem {
 	public PurchaseRequestLineItem(int id, PurchaseRequest purchaserequest, Product product, int quantity) {
 		super();
 		this.id = id;
-		this.purchaserequest = purchaserequest;
+		this.purchaseRequest = purchaserequest;
 		this.product = product;
 		this.quantity = quantity;
 	}
 
 	public PurchaseRequestLineItem(PurchaseRequest purchaserequest, Product product, int quantity) {
 		super();
-		this.purchaserequest = purchaserequest;
+		this.purchaseRequest = purchaserequest;
 		this.product = product;
 		this.quantity = quantity;
 	}
@@ -49,12 +49,12 @@ public class PurchaseRequestLineItem {
 		this.id = id;
 	}
 
-	public PurchaseRequest getPurchaserequest() {
-		return purchaserequest;
+	public PurchaseRequest getPurchaseRequest() {
+		return purchaseRequest;
 	}
 
-	public void setPurchaserequest(PurchaseRequest purchaserequest) {
-		this.purchaserequest = purchaserequest;
+	public void setPurchaseRequest(PurchaseRequest purchaserequest) {
+		this.purchaseRequest = purchaserequest;
 	}
 
 	public Product getProduct() {
@@ -75,7 +75,7 @@ public class PurchaseRequestLineItem {
 
 	@Override
 	public String toString() {
-		return "PurchaseRequestLineItem [id=" + id + ", purchaserequest=" + purchaserequest + ", product=" + product
+		return "PurchaseRequestLineItem [id=" + id + ", purchaserequest=" + purchaseRequest + ", product=" + product
 				+ ", quantity=" + quantity + "]";
 	}
 	
